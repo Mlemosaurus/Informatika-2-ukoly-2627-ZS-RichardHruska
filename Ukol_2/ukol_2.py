@@ -23,8 +23,16 @@ def extrahuj_hashtagy(text: str) -> set[str]:
         text = "Učíme se #Python a #datové_struktury! #python je #super."
         extrahuj_hashtagy(text) -> {"python", "datové_struktury", "super"}
     """
-    # TODO: Doplňte implementaci
-    return set()
+    hashtag = set()
+
+    slova = text.split()
+    for word in slova:
+        if word.startswith('#'):
+            clean = word.lstrip("#").strip(',.!?:;"').lower()
+            if clean:
+                hashtag.add(clean)
+
+    return hashtag
 
 
 def porovnej_zajmy(student_a: set[str], student_b: set[str]) -> tuple[set[str], set[str], set[str]]:
@@ -42,8 +50,11 @@ def porovnej_zajmy(student_a: set[str], student_b: set[str]) -> tuple[set[str], 
         b = {"python", "sql", "git"}
         porovnej_zajmy(a, b) -> ({"python"}, {"c++", "linux"}, {"sql", "git"})
     """
-    # TODO: Doplňte implementaci
-    return (set(), set(), set())
+    pouze_a = student_a.difference(student_b)
+    pouze_b = student_b.difference(student_a)
+    prunik = student_a.intersection(student_b)
+    
+    return (prunik, pouze_a, pouze_b)
 
 
 def katalog_knih(knihy: list[tuple[str, str, int]]) -> dict[str, list[str]]:
@@ -67,8 +78,22 @@ def katalog_knih(knihy: list[tuple[str, str, int]]) -> dict[str, list[str]]:
         ]
         katalog_knih(katalog) -> {"Sci-Fi": ["1984", "Duna"], "Fantasy": ["Pán prstenů"]}
     """
-    # TODO: Doplňte implementaci
-    return {}
+
+    knihovna = {}
+
+    for kniha in knihy:
+
+        zanr:str = kniha[1].lstrip().rstrip()
+        nazev:str = kniha[0]
+        if  zanr in knihovna:
+            pomoc:list = knihovna.get(zanr)
+            pomoc.append(nazev)
+            knihovna[zanr] = pomoc
+        else:
+            knihovna[zanr] = [nazev]
+
+    
+    return knihovna
 
 
 def statistika_textu(text: str) -> dict:
@@ -100,19 +125,58 @@ def statistika_textu(text: str) -> dict:
             "cetnost_delek": {6: 2, 5: 3, 4: 1, 3: 1}
         }
     """
-    # TODO: Doplňte implementaci
-    return {
+
+    staty = {
         "pocet_slov": 0,
         "pocet_unikatnich": 0,
         "nejdelsi_slovo": "",
         "cetnost_delek": {}
     }
 
+    delky = {}
+    
+    slova = []
+    if text:
+        separe = text.split()
+        for word in separe:
+            clean = word.strip(',.!?:;"').lower()
+            if clean:
+                slova.append(clean)
+    elif slova == []:
+        return staty
+    else:
+        return staty
+
+    unik_slova = set(slova)
+
+    nej_sl = ""
+    nej_delk = 0
+
+    for word in slova: 
+        delka_slova = len(word)  
+        if delka_slova > nej_delk:  #nejdelsi slovo a jeho delka
+            nej_delk = delka_slova
+            nej_sl = word
+        if delka_slova in delky:
+            pomocna_delka = delky.get(delka_slova)
+            pomocna_delka += 1
+            delky[delka_slova] = pomocna_delka
+        else:
+            delky[delka_slova] = 1
+
+    staty["pocet_slov"] = len(slova)
+    staty["pocet_unikatnich"] = len(unik_slova)
+    staty["nejdelsi_slovo"] = nej_sl
+    staty["cetnost_delek"] = delky
+
+    
+    return staty
+
 
 def main():
     print("=== Testování funkcí Úkolu 2 ===")
     
-    text = "Učíme se #Python a #datové_struktury! #python je #super."
+    text = "Učíme se #Python; a #datové_struktury! #python je #super."
     tagy = extrahuj_hashtagy(text)
     print(f"1. Hashtagy: {tagy}")
 
